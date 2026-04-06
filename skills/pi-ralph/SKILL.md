@@ -1,5 +1,5 @@
 ---
-name: sayhello
+name: pi-ralph
 description: Generate personalized greeting messages in multiple languages. Use when the user asks for greetings, welcome messages, or hello templates for emails, speeches, or informal communication.
 ---
 
