@@ -28,6 +28,7 @@
     ],
     "image": "https://github.com/user-attachments/assets/68cdab11-76c6-4aed-9ea1-558cbb267ea6"
   },
+  "type": "module",
   "peerDependencies": {
     "@mariozechner/pi-coding-agent": "*",
     "@sinclair/typebox": "*"
