@@ -1,10 +1,134 @@
-0a. Study `.ralph/specs/*` with up to 250 parallel Sonnet subagents to learn the application specifications.
-0b. Study @IMPLEMENTATION_PLAN.md (if present) to understand the plan so far.
-0c. Study `src/lib/*` with up to 250 parallel Sonnet subagents to understand shared utilities & components.
-0d. For reference, the application source code is in `src/*`.
+# 计划模式（Planning Mode）
 
-1. Study @IMPLEMENTATION_PLAN.md (if present; it may be incorrect) and use up to 500 Sonnet subagents to study existing source code in `src/*` and compare it against `.ralph/specs/*`. Use an Opus subagent to analyze findings, prioritize tasks, and create/update @IMPLEMENTATION_PLAN.md as a bullet point list sorted in priority of items yet to be implemented. Ultrathink. Consider searching for TODO, minimal implementations, placeholders, skipped/flaky tests, and inconsistent patterns. Study @IMPLEMENTATION_PLAN.md to determine starting point for research and keep it up to date with items considered complete/incomplete using subagents.
+## 文件路径
+- [Makefile.md](.ralph/workflow/Makefile.md)
+- [Tasks.md](.ralph/workflow/Tasks.md)
+- [Learnings.md](.ralph/workflow/Learnings.md)
 
-IMPORTANT: Plan only. Do NOT implement anything. Do NOT assume functionality is missing; confirm with code search first. Treat `src/lib` as the project's standard library for shared utilities and components. Prefer consolidated, idiomatic implementations there over ad-hoc copies.
+## 目标
+通过对比规格说明书（specs）与现有代码，创建一份细粒度、可执行的开发计划（`Tasks.md`）。
 
-ULTIMATE GOAL: We want to achieve [project-specific goal]. Consider missing elements and plan accordingly. If an element is missing, search first to confirm it doesn't exist, then if needed author the specification at .ralph/specs/FILENAME.md. If you create a new element then document the plan to implement it in @IMPLEMENTATION_PLAN.md using a subagent.
+## 步骤
+
+### 0. 熟悉项目
+- 阅读 `.ralph/specs/*` 目录下的所有规格说明书，理解需求
+- 阅读 `Tasks.md`（如果存在）了解已有计划
+- 探索项目代码结构，了解共享工具、组件和架构模式
+- 熟悉源代码的组织方式（通常位于项目根目录或标准源代码目录中）
+
+### 1. 差距分析（Gap Analysis）
+- 对比规格说明书（specs）与现有代码，找出缺失或未完全实现的功能
+- **重要**：不要假设功能缺失，先搜索代码确认是否已实现
+- 查找代码中的 TODO、占位符、跳过/不稳定的测试、不一致的模式
+- 识别功能依赖关系：遵循技术栈的自然顺序（例如：数据存储 → 业务逻辑 → 接口/API → 用户界面）
+
+### 2. 创建/更新开发计划
+基于差距分析结果，创建/更新 `Tasks.md` 文件。
+
+#### 2.1 计划文件结构
+`Tasks.md` 只包含两个部分：
+1. 一级标题 `# Task`
+2. 二级标题 `## 任务`
+
+**不允许**包含以下内容：
+- 项目概述、计划生成信息
+- 已完成事项、发现的问题、后续工作
+- 计划更新记录、使用说明、注意事项
+- 任何额外的说明文字
+
+#### 2.2 任务格式
+每个任务使用三级标题，格式如下：
+```markdown
+### T-xxx (优先级: n): [任务标题]
+**描述**: [用户故事格式的描述]
+**验收标准**:
+- [ ] [具体可验证的标准1]
+- [ ] [具体可验证的标准2]
+- [ ] [项目定义的验证步骤，例如：类型检查通过、编译通过、测试通过等]
+- [ ] [对于涉及用户界面的任务：适当的界面验证步骤]
+**依赖**: [前置任务ID] 或 无
+**规模**: 小/中/大
+```
+
+**字段说明**:
+- **任务ID**：`T-xxx`，其中 `xxx` 为三位数字，从 `001` 开始连续编号
+- **优先级**：数字 `n`，从 `1` 开始，数字越小优先级越高。优先级决定执行顺序
+- **任务标题**：简短描述任务内容（例如：“添加新字段到数据存储”、“实现核心算法”、“创建用户界面组件”）
+- **描述**：使用用户故事格式："As a [角色], I want [功能], so that [价值]"
+- **验收标准**：
+  - 每个标准必须具体、可验证、非模糊
+  - 必须包含项目定义的验证步骤（例如：类型检查通过、编译通过、测试通过等）
+  - 涉及用户界面的任务必须包含适当的界面验证步骤（例如：浏览器验证、视觉测试、交互测试等）
+  - 使用复选框 `- [ ]` 格式，便于跟踪完成状态
+- **依赖**：前置任务ID（如 `T-001`），若无依赖则写“无”
+- **规模**：
+  - **小**：预计变更 1-2 个文件或组件，可在单个上下文窗口内完成
+  - **中**：预计变更 3-5 个文件或组件，可能需要更仔细的规划
+  - **大**：预计变更 5+ 个文件或组件，应尽量避免，考虑拆分为更小的任务
+
+#### 2.3 任务设计原则
+1. **细粒度**：每个任务必须小到能在一个上下文窗口内完成（通常 1-2 个文件或组件变更）
+2. **用户故事格式**：描述使用 "As a [角色], I want [功能], so that [价值]" 格式，明确用户价值
+3. **可验证的验收标准**：每个标准必须可验证、非模糊
+   - 必须包含项目定义的验证步骤（例如：类型检查通过、编译通过、测试通过等）
+   - 涉及用户界面的任务必须包含适当的界面验证步骤（例如：浏览器验证、视觉测试、交互测试等）
+4. **明确依赖**：按技术依赖顺序（例如：数据层 → 业务逻辑层 → 接口层 → 表现层）
+5. **合理规模**：根据预计变更范围标记为小/中/大，优先拆分大型任务
+
+#### 2.4 任务拆分指南
+- 如果一个功能需要修改多个技术层次（例如：数据存储、业务逻辑、用户界面），拆分为多个任务
+- 如果任务验收标准超过 5 条，考虑进一步拆分为更小的任务
+- 优先顺序：技术依赖优先（底层组件先于上层组件），用户价值优先
+
+### 3. 计划原则
+- **单一事实源**：共享工具和组件应集中在适当的目录中，避免重复实现
+- **计划可丢弃**：如果计划不正确，可以随时重新生成
+- **保持极简**：计划文件只包含任务列表，无任何额外信息
+- **依赖显式化**：明确任务间依赖关系，防止跳跃执行
+
+### 4. 规格说明书维护
+- 如果发现规格说明书不一致或缺失，可以创建新的规格说明书文件
+- 新文件保存在 `.ralph/specs/` 目录，命名格式：`[编号]-[功能名称].md`
+- 更新计划时记录需要创建的规格说明书
+
+## 输出
+- 更新后的 `Tasks.md` 文件（严格遵循上述格式）
+- 如有需要，新增或更新的规格说明书
+
+## 示例
+以下是 `Tasks.md` 中一个任务的完整示例，供参考：
+
+```markdown
+### T-002 (优先级: 2): 更新数据模型以支持新特性
+**描述**: As a developer, I need the application data model to support the new feature requirements.
+**验收标准**:
+- [ ] 更新数据模型定义（例如：数据库表、类、接口或配置文件）
+- [ ] 确保数据验证逻辑与新的模型一致
+- [ ] 通过项目定义的验证步骤（例如：类型检查通过、编译通过、测试通过等）
+**依赖**: T-001
+**规模**: 小
+
+### T-003 (优先级: 3): 添加用户界面组件
+**描述**: As a user, I want to interact with the new feature through a clear interface.
+**验收标准**:
+- [ ] 创建或更新用户界面组件
+- [ ] 组件正确显示并与后端数据同步
+- [ ] 通过项目定义的验证步骤（例如：类型检查通过、编译通过、测试通过等）
+- [ ] 进行适当的界面验证（例如：浏览器验证、视觉测试、交互测试等）
+**依赖**: T-002
+**规模**: 小
+```
+
+**注意**：以上仅为示例，展示不同技术栈下的任务格式。实际任务应根据项目具体技术栈调整验收标准中的验证步骤。例如：
+- **Web 项目**：可能包含“类型检查通过”和“浏览器验证”
+- **游戏项目**：可能包含“编译通过”和“游戏内测试”
+- **嵌入式项目**：可能包含“编译通过”和“硬件测试”
+- **数据科学项目**：可能包含“代码检查通过”和“结果验证”
+
+实际 `Tasks.md` 应包含多个按优先级排序的任务，每个任务都遵循上述格式。
+
+## 重要提醒
+- **仅制定计划**：不要实施任何代码更改。所有实施工作在构建模式（Build Mode）中进行。
+- **任务最小化**：如果发现任务过大，继续拆分为更小的子任务。
+- **格式严格**：务必遵循上述 Markdown 格式，确保代理可正确解析。
+- **依赖检查**：确保任务依赖关系无循环，且技术栈顺序正确。
